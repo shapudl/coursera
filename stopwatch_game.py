@@ -1,6 +1,7 @@
-#### work in progress
+#### 
 ## stopwatch game for two players
-
+## keyboard input for player 1 is "a"
+## keyboard input for player 2 is left arrow
 
 import simplegui
 
@@ -38,12 +39,17 @@ def stop():
     global count_try_2
     global count_win_1
     global count_win_2
+    global score1
+    global score2
     
     count = 0
     count_win_1 = 0
     count_win_2 = 0
     count_try_1 = 0
     count_try_2 = 0
+    
+    score1 = 0
+    score2 = 0
     timer.stop()
 
 def pause():
@@ -63,7 +69,7 @@ def play_1():
         score1 += 3 
     else : 
         score1 -= 1
-        
+
 def play_2():
     global count_try_2
     global count_win_2
@@ -139,10 +145,20 @@ def yellow_handler(text):
     name2 = text
     return name2 
 
-def key_handler(key1):
-    if key == simplegui.KEY_MAP['left']:
-        play_1
-    return
+
+def key_handler(key):
+    # player 1 - a
+    #player 2 - "left"
+    
+    print simplegui.KEY_MAP["left"] # 37
+    print key		       	# 39 when "left"
+    
+    if key == 39 :
+        # == simplegui.KEY_MAP["left"]
+        play_2()
+    if key == simplegui.KEY_MAP["a"] :
+        play_1()
+    
 
 
 
@@ -150,6 +166,7 @@ def key_handler(key1):
 
 frame = simplegui.create_frame("Stopwatch game", 300,300)
 timer = simplegui.create_timer(100, go )
+frame.set_keydown_handler(key_handler)
 
 frame.set_draw_handler(draw)
 frame.set_canvas_background("silver")
@@ -158,8 +175,6 @@ frame.add_button("Stop", pause , 100)
 frame.add_button("Reset", stop, 100)
 frame.add_button("Click 1", play_1, 100)
 frame.add_button("Click 2", play_2, 100)
-
-
 
 
 
