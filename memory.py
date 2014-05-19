@@ -1,6 +1,6 @@
-#IN PROGRESS
+
 #implementation of card game - Memory
-#try it out here --> http://www.codeskulptor.org/#user32_CBgCeL1mXa_10.py
+#try it here --- http://www.codeskulptor.org/#user32_CBgCeL1mXa_17.py
 
 import simplegui
 import random
@@ -10,17 +10,21 @@ state= 0
 turn = 0
 pairs = []
 clicked = []
-size = 4
+hand = []
+size = 8
 # helper function to initialize globals
 
 def new_game():
-    global turn, clicked
+    global turn, clicked, pairs
     
-    turn = 0
     clicked = []
+    pairs = []
+    turn = 0
+    for k in range(size*2) :
+        clicked.append(False);
+    
     create_pairs()
-    for k in pairs:
-        print k, pairs[k]
+  
     
 def create_pairs():
     global pairs
@@ -35,25 +39,33 @@ def create_pairs():
 # define event handlers
 def mouseclick(pos):
     # add game state
-    global state,card,turn, clicked
+    global state,card,turn, clicked, hand
     
-   
-    print "State & turn: ", state, turn 
+    if state == 0 or state == 1 :
+        state +=1
+    else :
+        state = 1
+        turn += 1
+        inp.set_text('Turn =' + str(turn))
+    
     for k in range(size*2):
-        if pos[0]>k*50 and pos[0]<(k+1)*50:
-            card = k
-            if k in clicked:
-                if state == 0 or state == 1 :
-                     state += 1
-                else : 
-                    state = 1
-                    turn += 1
-                    clicked.pop()
-            else:
-                clicked.append(k)
         
-    print clicked
-    
+        if pos[0]>k*50 and pos[0]<(k+1)*50:
+            if clicked[k] == False :
+                
+                clicked[k] = True
+                
+                if state == 1 and len(hand) == 2:
+                    clicked[hand[0][0]] = False
+                    clicked[hand[1][0]] = False
+                    hand = []
+                              
+                hand.append([k,pairs[k]])
+                if len(hand) == 2 :
+                    if hand[0][1] == hand[1][1] :
+                        print "Found a pair!"
+                        hand = []
+                  
     
         
 def show_card(k):
@@ -64,22 +76,24 @@ def draw(canvas):
     global pos,pairs,clicked
     
     for k in range(len(pairs)):
-        canvas.draw_text(str(pairs[k]), ( k*50+ 16,60), 40,"aqua")
+        canvas.draw_text(str(pairs[k]), ( k*50+ 16,60), 40,"teal")
         
     for k in range(size*2):
-        if k in clicked :
-            canvas.draw_polygon([(k * 50, 0), ((k+1)*50, 0), ((k+1)*50, 100), (k*50,100)], 1, "Yellow")
+        if clicked[k] == True :
+            canvas.draw_polygon([(k * 50, 0), ((k+1)*50, 0), ((k+1)*50, 100), (k*50,100)], 1, "gray")
     
         else:
-            canvas.draw_polygon([(k * 50, 0), ((k+1)*50, 0), ((k+1)*50, 100), (k*50,100)], 1, "Yellow","Red")
+            canvas.draw_polygon([(k * 50, 0), ((k+1)*50, 0), ((k+1)*50, 100), (k*50,100)], 1, "Yellow","teal")
         
 
     
 
 # create frame and add a button and labels
 frame = simplegui.create_frame("Memory", size * 100, 100)
+frame.set_canvas_background('Silver')
 frame.add_button("Reset", new_game)
-label = frame.add_label('Turn = ' + str(turn), 50)
+inp = frame.add_label('Turn = 0' , 50)
+inp.set_text('Turn =' + str(turn))
 
 
 # register event handlers
